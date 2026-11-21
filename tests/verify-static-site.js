@@ -31,6 +31,7 @@ const home = read('index.html');
 const arcade = read('prototypes/career-arcade/index.html');
 const privacy = read('privacy/dot-and-box/index.html');
 const teenPrivacy = read('privacy/teen-do-panch/index.html');
+const silentGaming = read('silent-gaming/index.html');
 const appAds = read('app-ads.txt');
 const legacyHome = read('dp-portfolio/index.html');
 const legacyPrivacy = read('dp-portfolio/privacy/dot-and-box/index.html');
@@ -39,6 +40,7 @@ const mainPortfolioCss = read('assets/css/main-portfolio.css');
 const arcadeCss = read('assets/css/arcade.css');
 const arcadeRedesignCss = read('assets/css/arcade-redesign.css');
 const privacyCss = read('assets/css/privacy.css');
+const silentGamingCss = read('assets/css/silent-gaming.css');
 const siteJs = read('assets/js/site.js');
 const arcadeJs = read('prototypes/career-arcade/arcade.js');
 
@@ -46,6 +48,7 @@ expectDocumentBasics(home, 'Homepage');
 expectDocumentBasics(arcade, 'Career Arcade prototype');
 expectDocumentBasics(privacy, 'Privacy page');
 expectDocumentBasics(teenPrivacy, 'Teen Do Panch privacy page');
+expectDocumentBasics(silentGaming, 'Silent Gaming page');
 expectDocumentBasics(legacyHome, 'Legacy homepage redirect');
 expectDocumentBasics(legacyPrivacy, 'Legacy Dots and Boxes privacy redirect');
 expectDocumentBasics(legacyTeenPrivacy, 'Legacy Teen Do Panch privacy redirect');
@@ -79,6 +82,24 @@ expect(teenPrivacy.includes('mailto:dgp76210@gmail.com'), 'Teen Do Panch privacy
 expect(teenPrivacy.includes('Effective date: 7 November 2026'), 'Teen Do Panch privacy page must show the reviewed effective date.');
 expect(!privacy.includes('REPLACE_WITH_AN_ACTIVELY_MONITORED_PRIVACY_EMAIL_BEFORE_PUBLISHING'), 'Privacy page must not retain an unresolved privacy-contact placeholder.');
 
+expect(silentGaming.includes('<main>'), 'Silent Gaming page must provide a main content landmark.');
+expect(silentGaming.includes('href="#games"'), 'Silent Gaming page must provide a skip link.');
+expect(silentGaming.includes('Teen Do Panch'), 'Silent Gaming page must include Teen Do Panch.');
+expect(silentGaming.includes('Dot and Box'), 'Silent Gaming page must include Dot and Box.');
+expect(silentGaming.includes('href="../privacy/teen-do-panch/"'), 'Silent Gaming page must link to the Teen Do Panch privacy policy.');
+expect(silentGaming.includes('href="../privacy/dot-and-box/"'), 'Silent Gaming page must link to the Dot and Box privacy policy.');
+expect(silentGaming.includes('mailto:dgp76210@gmail.com'), 'Silent Gaming page must provide the support email.');
+expect(!silentGaming.includes('<script'), 'Silent Gaming page must not load scripts.');
+expect(!/\b(?:api[_-]?key|secret|password)\b/i.test(silentGaming), 'Silent Gaming page must not contain common secret markers.');
+
+const gamingExternalLinks = [...silentGaming.matchAll(/href="(https?:\/\/[^\"]+)"/g)].map((match) => match[1]).sort();
+const expectedGamingExternalLinks = [
+  'https://play.google.com/store/apps/details?id=com.darshilpatel.dotsandboxes',
+  'https://play.google.com/store/apps/details?id=com.silentgaming.teendopanch'
+].sort();
+expect(JSON.stringify(gamingExternalLinks) === JSON.stringify(expectedGamingExternalLinks), 'Silent Gaming page must link only to the two approved Google Play listings.');
+expect(expectedGamingExternalLinks.every((link) => silentGaming.includes(`href="${link}" rel="noopener noreferrer"`)), 'Each Silent Gaming external link must isolate its browsing context.');
+
 const normalizedAppAds = appAds.replace(/\r\n/g, '\n');
 expect(normalizedAppAds === 'google.com, pub-4169351252378286, DIRECT, f08c47fec0942fa0\n', 'app-ads.txt must contain only the exact authorized AdMob publisher record.');
 expect(legacyHome.includes('content="0; url=/"'), 'Legacy portfolio route must redirect to the root homepage.');
@@ -90,6 +111,8 @@ expectLocalFile('assets/js/site.js');
 expectLocalFile('assets/css/arcade.css');
 expectLocalFile('assets/css/arcade-redesign.css');
 expectLocalFile('assets/css/privacy.css');
+expectLocalFile('assets/css/silent-gaming.css');
+expect(silentGamingCss.includes('prefers-reduced-motion'), 'Silent Gaming styling must respect reduced-motion preferences.');
 
 const sourceFiles = [
   ['index.html', home],
@@ -100,6 +123,7 @@ const sourceFiles = [
   ['assets/css/arcade.css', arcadeCss],
   ['assets/css/arcade-redesign.css', arcadeRedesignCss],
   ['assets/css/privacy.css', privacyCss],
+  ['assets/css/silent-gaming.css', silentGamingCss],
   ['assets/js/site.js', siteJs],
   ['prototypes/career-arcade/arcade.js', arcadeJs]
 ];
