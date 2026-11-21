@@ -31,6 +31,10 @@ const home = read('index.html');
 const arcade = read('prototypes/career-arcade/index.html');
 const privacy = read('privacy/dot-and-box/index.html');
 const teenPrivacy = read('privacy/teen-do-panch/index.html');
+const appAds = read('app-ads.txt');
+const legacyHome = read('dp-portfolio/index.html');
+const legacyPrivacy = read('dp-portfolio/privacy/dot-and-box/index.html');
+const legacyTeenPrivacy = read('dp-portfolio/privacy/teen-do-panch/index.html');
 const mainPortfolioCss = read('assets/css/main-portfolio.css');
 const arcadeCss = read('assets/css/arcade.css');
 const arcadeRedesignCss = read('assets/css/arcade-redesign.css');
@@ -42,6 +46,9 @@ expectDocumentBasics(home, 'Homepage');
 expectDocumentBasics(arcade, 'Career Arcade prototype');
 expectDocumentBasics(privacy, 'Privacy page');
 expectDocumentBasics(teenPrivacy, 'Teen Do Panch privacy page');
+expectDocumentBasics(legacyHome, 'Legacy homepage redirect');
+expectDocumentBasics(legacyPrivacy, 'Legacy Dots and Boxes privacy redirect');
+expectDocumentBasics(legacyTeenPrivacy, 'Legacy Teen Do Panch privacy redirect');
 
 expect(home.includes('href="#main-content"'), 'Homepage must provide a skip link.');
 expect(home.includes('<main id="main-content"'), 'Homepage must provide a main content landmark.');
@@ -69,8 +76,14 @@ expect(privacy.includes('Silent Gaming'), 'Privacy page must identify the confir
 expect(privacy.includes('mailto:dgp76210@gmail.com'), 'Privacy page must provide the confirmed privacy contact.');
 expect(teenPrivacy.includes('Silent Gaming'), 'Teen Do Panch privacy page must identify the Google Play developer.');
 expect(teenPrivacy.includes('mailto:dgp76210@gmail.com'), 'Teen Do Panch privacy page must provide the privacy contact.');
-expect(teenPrivacy.includes('Effective date: 15 October 2026'), 'Teen Do Panch privacy page must show the reviewed effective date.');
+expect(teenPrivacy.includes('Effective date: 7 November 2026'), 'Teen Do Panch privacy page must show the reviewed effective date.');
 expect(!privacy.includes('REPLACE_WITH_AN_ACTIVELY_MONITORED_PRIVACY_EMAIL_BEFORE_PUBLISHING'), 'Privacy page must not retain an unresolved privacy-contact placeholder.');
+
+const normalizedAppAds = appAds.replace(/\r\n/g, '\n');
+expect(normalizedAppAds === 'google.com, pub-4169351252378286, DIRECT, f08c47fec0942fa0\n', 'app-ads.txt must contain only the exact authorized AdMob publisher record.');
+expect(legacyHome.includes('content="0; url=/"'), 'Legacy portfolio route must redirect to the root homepage.');
+expect(legacyPrivacy.includes('content="0; url=/privacy/dot-and-box/"'), 'Legacy Dots and Boxes privacy route must redirect to its root-site address.');
+expect(legacyTeenPrivacy.includes('content="0; url=/privacy/teen-do-panch/"'), 'Legacy Teen Do Panch privacy route must redirect to its root-site address.');
 
 expectLocalFile('assets/css/main-portfolio.css');
 expectLocalFile('assets/js/site.js');
